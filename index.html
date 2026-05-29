@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authôt APP Recorder - Web</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+    }
+    
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+    
+    p {
+      color: #666;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 15px 30px;
+      background: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    
+    .btn:hover {
+      background: #0056b3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .features {
+      text-align: left;
+      margin: 30px 0;
+      padding: 20px;
+      background: #e7f3ff;
+      border-radius: 8px;
+      border-left: 4px solid #007bff;
+    }
+    
+    .features h3 {
+      color: #004085;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    
+    .features ul {
+      padding-left: 20px;
+      margin: 0;
+    }
+    
+    .features li {
+      margin-bottom: 8px;
+      color: #004085;
+    }
+    
+    .icon {
+      font-size: 24px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎤 Authôt APP Recorder - Web</h1>
+    
+    <p>
+      Enregistrez et envoyez votre audio directement depuis votre navigateur vers Authôt APP.
+      Pas besoin d'extension, il suffit d'ouvrir cette page dans un nouvel onglet.
+    </p>
+    
+    <div class="features">
+      <h3><span class="icon">✨</span> Fonctionnalités</h3>
+      <ul>
+        <li>Authentification sécurisée avec votre token API Authôt APP</li>
+        <li>Sélection de la langue (Français, Anglais, Espagnol)</li>
+        <li>Détection et sélection automatique des microphones disponibles</li>
+        <li>Enregistrement audio de haute qualité</li>
+        <li>Prévisualisation du fichier avant envoi</li>
+        <li>Envoi automatique vers votre compte Authôt APP</li>
+      </ul>
+    </div>
+    
+    <a href="record.html" class="btn">🎤 Ouvrir l'enregistreur</a>
+    
+    <p style="margin-top: 30px; font-size: 14px; color: #999;">
+      Développé avec ❤️ pour Authôt APP
+    </p>
+  </div>
+</body>
+</html>

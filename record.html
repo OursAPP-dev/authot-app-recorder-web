@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authôt Recorder - Enregistrement</title>
+  <style>
+    body {
+      width: 100%;
+      max-width: 500px;
+      min-height: 600px;
+      padding: 20px;
+      margin: 0 auto;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    h1, h2, h3 {
+      color: #2c3e50;
+      margin: 0 0 10px 0;
+      font-size: 20px;
+      text-align: center;
+    }
+
+    .auth-section, .recorder-section {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input, select {
+      padding: 12px;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 14px;
+      background: white;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
+
+    button {
+      padding: 14px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 15px;
+      font-weight: 500;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover:not(:disabled) {
+      background: #0056b3;
+      transform: translateY(-1px);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .status {
+      color: #666;
+      font-size: 15px;
+      margin: 8px 0;
+      text-align: center;
+      min-height: 20px;
+      font-weight: 500;
+    }
+
+    #playback {
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+
+    #logout-btn {
+      background: #dc3545;
+    }
+
+    #logout-btn:hover:not(:disabled) {
+      background: #c82333;
+    }
+
+    #upload-btn {
+      background: #28a745;
+    }
+
+    #upload-btn:hover:not(:disabled) {
+      background: #218838;
+    }
+
+    /* Avertissement d'enregistrement */
+    .recording-warning {
+      background: #ffc107;
+      color: #856404;
+      padding: 15px;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 15px;
+      display: none;
+      animation: pulse 1.5s infinite;
+      font-size: 16px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* Style pour la section d'auth */
+    .auth-info {
+      background: #e7f3ff;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      border-left: 4px solid #007bff;
+    }
+
+    .auth-info p {
+      margin: 5px 0;
+      color: #004085;
+    }
+
+    /* Bouton de retour */
+    .back-btn {
+      background: #6c757d;
+      margin-bottom: 15px;
+    }
+
+    .back-btn:hover:not(:disabled) {
+      background: #5a6268;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .header h1 {
+      margin: 0;
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎤 Authôt Recorder</h1>
+    </div>
+    
+    <!-- Section d'authentification -->
+    <div id="auth-section" class="auth-section">
+      <div class="auth-info">
+        <h3>Authôt APP</h3>
+        <p>Veuillez saisir votre token API pour vous connecter.</p>
+        <p style="font-size: 13px; color: #666;">
+          Vous pouvez obtenir votre token dans votre compte Authôt APP.
+        </p>
+      </div>
+      
+      <input type="text" id="token-input" placeholder="Token d'accès" />
+      <button id="save-token-btn">🔑 Enregistrer le token</button>
+      <p id="auth-status" class="status"></p>
+      
+      <button id="back-btn" class="back-btn">← Retour à l'accueil</button>
+    </div>
+
+    <!-- Section d'enregistrement -->
+    <div id="recorder-section" style="display: none;">
+      <div id="recording-warning" class="recording-warning">
+        ⚠️ ENREGISTREMENT EN COURS - Ne fermez pas cet onglet !
+      </div>
+      
+      <div class="auth-info">
+        <p>✅ Connecté avec succès</p>
+        <p style="font-size: 13px; color: #666;">
+          Votre token est sauvegardé. Vous pouvez commencer l'enregistrement.
+        </p>
+      </div>
+      
+      <h3>Enregistrement Audio</h3>
+      
+      <label for="language-select">Langue :</label>
+      <select id="language-select">
+        <option value="fr">Français</option>
+        <option value="en">Anglais</option>
+        <option value="es">Espagnol</option>
+      </select>
+      
+      <label for="microphone-select" style="margin-top: 10px; display: block;">Microphone :</label>
+      <select id="microphone-select" style="display: none;"></select>
+      
+      <button id="start-btn">🎤 Démarrer l'enregistrement</button>
+      <button id="stop-btn" disabled>⏹ Arrêter</button>
+      <p id="recording-status" class="status">Prêt à enregistrer</p>
+      <audio id="playback" controls style="display: none; width: 100%; margin-top: 10px;"></audio>
+      
+      <button id="logout-btn" style="margin-top: 15px;">🔒 Déconnexion</button>
+      <button id="back-btn-recorder" class="back-btn" style="margin-top: 10px;">← Retour à l'accueil</button>
+    </div>
+  </div>
+  
+  <script src="record.js"></script>
+</body>
+</html>
