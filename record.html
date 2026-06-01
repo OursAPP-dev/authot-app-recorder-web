@@ -166,6 +166,58 @@
       margin: 0;
       flex: 1;
     }
+
+    /* Bouton Pause */
+    #pause-btn {
+      background: #ffc107;
+    }
+
+    #pause-btn:hover:not(:disabled) {
+      background: #e0a800;
+    }
+
+    /* Conteneur waveform */
+    #waveform-container {
+      background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+      border: 2px solid #007bff;
+    }
+
+    #waveform-canvas {
+      background: transparent;
+    }
+
+    /* Lecteur audio personnalisé */
+    #audio-player-container {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 8px;
+      background: white;
+    }
+
+    #play-pause-btn {
+      transition: all 0.2s;
+    }
+
+    #play-pause-btn:hover {
+      background: #0056b3;
+      transform: scale(1.05);
+    }
+
+    #time-display {
+      font-family: monospace;
+    }
+
+    /* Animation pour l'onde sonore */
+    @keyframes wavePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .wave-bar {
+      background: #007bff;
+      border-radius: 2px;
+      animation: wavePulse 0.5s ease-in-out infinite;
+    }
   </style>
 </head>
 <body>
@@ -218,8 +270,22 @@
       
       <button id="start-btn">🎤 Démarrer l'enregistrement</button>
       <button id="stop-btn" disabled>⏹ Arrêter</button>
+      <button id="pause-btn" disabled>⏸ Mettre en pause</button>
       <p id="recording-status" class="status">Prêt à enregistrer</p>
-      <audio id="playback" controls style="display: none; width: 100%; margin-top: 10px;"></audio>
+      <div id="waveform-container" style="display: none; width: 100%; height: 100px; margin: 10px 0; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
+        <canvas id="waveform-canvas" style="width: 100%; height: 100%;"></canvas>
+      </div>
+      <div id="audio-player-container" style="display: none; width: 100%; margin-top: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button id="play-pause-btn" style="padding: 8px 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">▶</button>
+          <div style="flex: 1; height: 40px; background: #e0e0e0; border-radius: 4px; position: relative; overflow: hidden;">
+            <div id="progress-bar" style="height: 100%; width: 0%; background: #007bff; transition: width 0.1s;"></div>
+            <canvas id="player-waveform" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
+          </div>
+          <span id="time-display" style="font-size: 12px; color: #666; min-width: 80px; text-align: right;">0:00 / 0:00</span>
+        </div>
+      </div>
+      <audio id="playback" style="display: none;"></audio>
       
       <button id="logout-btn" style="margin-top: 15px;">🔒 Déconnexion</button>
       <button id="back-btn-recorder" class="back-btn" style="margin-top: 10px;">← Retour à l'accueil</button>
