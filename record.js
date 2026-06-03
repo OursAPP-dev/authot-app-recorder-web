@@ -304,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadBtn.id = 'upload-btn';
     uploadBtn.textContent = '📤 Envoyer vers Authôt APP';
     uploadBtn.style.marginTop = '15px';
-    uploadBtn.style.background = '#28a745';
+    uploadBtn.style.background = '#F68807';
     
     uploadBtn.addEventListener('click', () => {
       uploadToAuthot(audioBlob);
