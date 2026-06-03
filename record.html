@@ -13,7 +13,7 @@
       margin: 0 auto;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: #f8f9fa;
-      color: #333;
+      color: #484E52;
     }
 
     .container {
@@ -23,7 +23,7 @@
     }
 
     h1, h2, h3 {
-      color: #2c3e50;
+      color: #484E52;
       margin: 0 0 10px 0;
       font-size: 20px;
       text-align: center;
@@ -54,7 +54,7 @@
 
     button {
       padding: 14px;
-      background: #007bff;
+      background: #1DBAA5;
       color: white;
       border: none;
       border-radius: 6px;
@@ -66,7 +66,7 @@
     }
 
     button:hover:not(:disabled) {
-      background: #0056b3;
+      background: #1DBAA5;
       transform: translateY(-1px);
     }
 
@@ -81,7 +81,7 @@
     }
 
     .status {
-      color: #666;
+      color: #484E52;
       font-size: 15px;
       margin: 8px 0;
       text-align: center;
@@ -104,11 +104,11 @@
     }
 
     #upload-btn {
-      background: #28a745;
+      background: #F68807;
     }
 
     #upload-btn:hover:not(:disabled) {
-      background: #218838;
+      background: #F68807;
     }
 
     /* Avertissement d'enregistrement */
@@ -146,7 +146,7 @@
 
     /* Bouton de retour */
     .back-btn {
-      background: #6c757d;
+      background: #484E52;
       margin-bottom: 15px;
     }
 
@@ -179,7 +179,7 @@
     /* Conteneur waveform */
     #waveform-container {
       background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
-      border: 2px solid #007bff;
+      border: 2px solid #1DBAA5;
     }
 
     #waveform-canvas {
@@ -214,7 +214,7 @@
     }
 
     .wave-bar {
-      background: #007bff;
+      background: #1DBAA5;
       border-radius: 2px;
       animation: wavePulse 0.5s ease-in-out infinite;
     }
@@ -232,7 +232,7 @@
         <h3>Authôt APP</h3>
         <p>Veuillez saisir votre token API pour vous connecter.</p>
         <p style="font-size: 13px; color: #666;">
-          Vous pouvez obtenir votre token dans votre compte Authôt APP.
+          Vous pouvez obtenir votre token dans votre compte Authôt APP, rubrique Mon Compte.
         </p>
       </div>
       
@@ -251,8 +251,11 @@
       
       <div class="auth-info">
         <p>✅ Connecté avec succès</p>
-        <p style="font-size: 13px; color: #666;">
-          Votre token est sauvegardé. Vous pouvez commencer l'enregistrement.
+        <p style="font-size: 13px; color: #484E52;">
+          Votre token est sauvegardé.
+        </p>
+        <p style="font-size: 13px; color: #484E52;">
+          Vous pouvez commencer votre enregistrement sécurisé.
         </p>
       </div>
       
@@ -275,9 +278,9 @@
       <div id="waveform-container" style="display: none; width: 100%; height: 100px; margin: 10px 0; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
         <canvas id="waveform-canvas" style="width: 100%; height: 100%;"></canvas>
       </div>
-      <audio id="playback" controls style="display: none; width: 100%; margin-top: 10px;"></audio>
+      <audio id="playback" controls style="display: none; width: 100%; margin-top: 100px;"></audio>
       
-      <button id="logout-btn" style="margin-top: 15px;">🔒 Déconnexion</button>
+      <button id="logout-btn" style="margin-top: 50px;">🔒 Déconnexion</button>
       <button id="back-btn-recorder" class="back-btn" style="margin-top: 10px;">← Retour à l'accueil</button>
     </div>
   </div>
