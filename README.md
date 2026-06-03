@@ -1,6 +1,6 @@
 # Authôt APP Recorder - Web
 
-Une application web autonome pour enregistrer sa voix et envoyer les fichiers audio vers son compte Authôt APP. **Pas besoin d'extension Chrome** - il suffit d'ouvrir cette page dans un navigateur internet.
+Une application web autonome pour enregistrer sa voix et envoyer les fichiers audio vers son compte Authôt APP. Il suffit d'ouvrir cette page dans un navigateur internet : https://oursapp-dev.github.io/authot-app-recorder-web/
 
 ## ✨ Fonctionnalités
 
