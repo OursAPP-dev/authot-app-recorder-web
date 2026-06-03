@@ -310,12 +310,16 @@ document.addEventListener('DOMContentLoaded', () => {
       uploadToAuthot(audioBlob);
     });
 
-    stopBtn.parentNode.insertBefore(uploadBtn, stopBtn.nextSibling);
+    // Insérer le bouton sous le lecteur audio
+    const playbackElement = document.getElementById('playback');
+    playbackElement.parentNode.insertBefore(uploadBtn, playbackElement.nextSibling);
   }
 
   async function uploadToAuthot(audioBlob) {
     const uploadBtn = document.getElementById('upload-btn');
     const selectedLanguage = languageSelect.value;
+    const recordingNameInput = document.getElementById('recording-name');
+    const recordingName = recordingNameInput ? recordingNameInput.value.trim() : 'Enregistrement';
     
     uploadBtn.disabled = true;
     uploadBtn.textContent = '⏳ Envoi en cours...';
@@ -343,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const fileExtension = audioType.includes('wav') ? 'wav' : 
                           audioType.includes('webm') ? 'webm' : 
                           audioType.includes('ogg') ? 'ogg' : 'audio';
-      formData.append('data', audioBlob, `recording.${fileExtension}`);
+      formData.append('data', audioBlob, `${recordingName}.${fileExtension}`);
       formData.append('lang', apiLang);
       
       console.log('Envoi vers: https://authot.app/api/sounds/new');
@@ -382,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const responseData = await response.json();
       
-      recordingStatus.textContent = "✅ Fichier envoyé avec succès !";
+      recordingStatus.innerHTML = "✅ Fichier envoyé avec succès, retrouvez la transcription sur votre compte dans la rubrique <a href='https://authot.app/sounds' target='_blank' style='color: #007bff; text-decoration: underline;'>Mes projets</a> !";
       recordingStatus.style.color = 'green';
       uploadBtn.textContent = '📤 Envoyer vers Authôt APP';
       uploadBtn.disabled = false;
