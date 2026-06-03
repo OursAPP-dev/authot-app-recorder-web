@@ -271,6 +271,9 @@
       <label for="microphone-select" style="margin-top: 10px; display: block;">Microphone :</label>
       <select id="microphone-select" style="display: none;"></select>
       
+      <label for="recording-name" style="margin-top: 10px; display: block;">Nom de votre enregistrement :</label>
+      <input type="text" id="recording-name" value="Enregistrement" style="margin-bottom: 10px;" />
+      
       <button id="start-btn">🎤 Démarrer l'enregistrement</button>
       <button id="stop-btn" disabled>⏹ Arrêter</button>
       <button id="pause-btn" disabled>⏸ Mettre en pause</button>
@@ -278,7 +281,7 @@
       <div id="waveform-container" style="display: none; width: 100%; height: 100px; margin: 10px 0; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
         <canvas id="waveform-canvas" style="width: 100%; height: 100%;"></canvas>
       </div>
-      <audio id="playback" controls style="display: none; width: 100%; margin-top: 100px;"></audio>
+      <audio id="playback" controls style="display: none; width: 100%; margin-top: 20px;"></audio>
       
       <button id="logout-btn" style="margin-top: 50px;">🔒 Déconnexion</button>
       <button id="back-btn-recorder" class="back-btn" style="margin-top: 10px;">← Retour à l'accueil</button>
