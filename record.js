@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mediaRecorder.resume();
       pauseBtn.textContent = '⏸ Mettre en pause';
       pauseBtn.style.background = '#ffc107';
-      recordingStatus.textContent = "⏺ Enregistrement en cours...";
+      recordingStatus.textContent = "🎙 Enregistrement en cours...";
       isPaused = false;
       resumeAudioVisualization();
     } else {
@@ -152,16 +152,77 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Fonction pour nettoyer l'enregistrement précédent
+  function clearPreviousRecording() {
+    // Arrêter tous les streams actifs
+    if (currentStream) {
+      currentStream.getTracks().forEach(track => track.stop());
+      currentStream = null;
+    }
+    
+    // Arrêter le MediaRecorder s'il est en cours
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.stop();
+    }
+    
+    // Réinitialiser les chunks audio
+    audioChunks = [];
+    
+    // Masquer le lecteur audio et réinitialiser la source
+    const playback = document.getElementById('playback');
+    if (playback) {
+      playback.style.display = 'none';
+      playback.src = '';
+      // Révoquer l'URL objet pour libérer la mémoire
+      if (playback.srcObject) {
+        playback.srcObject = null;
+      }
+    }
+    
+    // Supprimer le bouton Envoyer s'il existe
+    const uploadBtn = document.getElementById('upload-btn');
+    if (uploadBtn) {
+      uploadBtn.remove();
+    }
+    
+    // Arrêter la visualisation audio
+    stopAudioVisualization();
+    
+    // Masquer la waveform
+    const waveformContainer = document.getElementById('waveform-container');
+    if (waveformContainer) {
+      waveformContainer.style.display = 'none';
+    }
+    
+    // Réinitialiser les états
+    isRecording = false;
+    isPaused = false;
+    
+    // Réinitialiser les boutons
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+    pauseBtn.disabled = true;
+    pauseBtn.textContent = '⏸ Mettre en pause';
+    pauseBtn.style.background = '#ffc107';
+    
+    // Réinitialiser le statut
+    recordingStatus.textContent = "Prêt à enregistrer";
+    recordingStatus.style.color = '#666';
+    recordingWarning.style.display = 'none';
+    
+    // Autoriser la fermeture de l'onglet
+    allowPopupClose();
+  }
+
   // Démarrer l'enregistrement
   startBtn.addEventListener('click', async () => {
     try {
-      recordingStatus.textContent = "🔊 Demande d'accès au microphone...";
+      // NETTOYER L'ENREGISTREMENT PRÉCÉDENT AVANT DE DÉMARRER
+      clearPreviousRecording();
+      
+      recordingStatus.textContent = "🎤 Demande d'accès au microphone...";
       recordingStatus.style.color = 'blue';
       
-      if (currentStream) {
-        currentStream.getTracks().forEach(track => track.stop());
-      }
-
       let audioConstraints = true;
       
       if (microphoneSelectElement && microphoneSelectElement.value) {
@@ -196,11 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
           const audioUrl = URL.createObjectURL(audioBlob);
           playback.src = audioUrl;
           playback.style.display = 'block';
-          
-          const uploadBtn = document.getElementById('upload-btn');
-          if (!uploadBtn) {
-            createUploadButton(audioBlob);
-          }
         }
         
         if (currentStream) {
@@ -245,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
       startBtn.disabled = true;
       stopBtn.disabled = false;
       pauseBtn.disabled = false;
-      recordingStatus.textContent = "⏺ Enregistrement en cours...";
+      recordingStatus.textContent = "🎙 Enregistrement en cours...";
       recordingStatus.style.color = 'red';
       
       // Démarrer le dessin de la waveform
@@ -291,6 +347,16 @@ document.addEventListener('DOMContentLoaded', () => {
       pauseBtn.style.background = '#ffc107';
       recordingStatus.textContent = "✅ Enregistrement terminé. Prêt à envoyer.";
       recordingStatus.style.color = 'green';
+      
+      // CRÉER LE BOUTON ENVoyer UNIQUEMENT APRÈS ARRÊT
+      // On attend un peu pour s'assurer que mediaRecorder.onstop a fini
+      setTimeout(() => {
+        if (audioChunks.length > 0) {
+          const mimeType = audioChunks[0].type || 'audio/webm';
+          const audioBlob = new Blob(audioChunks, { type: mimeType });
+          createUploadButton(audioBlob);
+        }
+      }, 100);
     }
   });
 
@@ -312,7 +378,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Insérer le bouton sous le lecteur audio
     const playbackElement = document.getElementById('playback');
-    playbackElement.parentNode.insertBefore(uploadBtn, playbackElement.nextSibling);
+    if (playbackElement && playbackElement.parentNode) {
+      playbackElement.parentNode.insertBefore(uploadBtn, playbackElement.nextSibling);
+    }
   }
 
   async function uploadToAuthot(audioBlob) {
@@ -322,8 +390,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const recordingName = recordingNameInput ? recordingNameInput.value.trim() : 'Enregistrement';
     
     uploadBtn.disabled = true;
-    uploadBtn.textContent = '⏳ Envoi en cours...';
-    recordingStatus.textContent = "⏳ Envoi vers Authôt APP...";
+    uploadBtn.textContent = '📤 Envoi en cours...';
+    recordingStatus.textContent = "📤 Envoi vers Authôt APP...";
     recordingStatus.style.color = 'blue';
 
     try {
@@ -395,6 +463,11 @@ document.addEventListener('DOMContentLoaded', () => {
         audioChunks = [];
         playback.style.display = 'none';
         playback.src = '';
+        
+        // Supprimer le bouton Envoyer après succès
+        if (uploadBtn) {
+          uploadBtn.remove();
+        }
       }, 2000);
 
     } catch (error) {
@@ -518,26 +591,11 @@ document.addEventListener('DOMContentLoaded', () => {
     authStatus.textContent = 'Vous êtes déconnecté.';
     authStatus.style.color = 'orange';
     
-    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-      mediaRecorder.stop();
-    }
-    if (currentStream) {
-      currentStream.getTracks().forEach(track => track.stop());
-    }
-    audioChunks = [];
-    playback.style.display = 'none';
-    playback.src = '';
-    
-    const uploadBtn = document.getElementById('upload-btn');
-    if (uploadBtn) {
-      uploadBtn.remove();
-    }
+    // Nettoyer l'enregistrement en cours
+    clearPreviousRecording();
     
     // Réinitialiser les éléments de visualisation
     waveformContainer.style.display = 'none';
-    
-    // Arrêter la visualisation audio
-    stopAudioVisualization();
     
     startBtn.disabled = false;
     stopBtn.disabled = true;
