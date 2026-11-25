@@ -10,6 +10,9 @@ let analyser = null;
 let microphoneSource = null;
 let waveformCanvas = null;
 let waveformCtx = null;
+let tabStream = null;
+let mixContext = null;
+const TAB_AUDIO_VALUE = '__tab_audio__';
 
 // Éléments DOM
 document.addEventListener('DOMContentLoaded', () => {
@@ -31,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const recordingNameInput = document.getElementById('recording-name');
   const downloadBtn = document.getElementById('download-btn');
   const playbackBlock = document.getElementById('playback-block');
+  const tabAudioNote = document.getElementById('tab-audio-note');
   let currentAudioUrl = null;
   let currentAudioBlob = null;
 
@@ -44,6 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (recordingNameInput) {
       recordingNameInput.value = defaultRecordingName();
     }
+  }
+
+  function isTabAudioSupported() {
+    return !!(window.chrome && window.isSecureContext && navigator.mediaDevices && typeof navigator.mediaDevices.getDisplayMedia === 'function');
   }
 
   function getFileExtension(mimeType) {
@@ -163,6 +171,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadMicrophones() {
     try {
+      if (tabAudioNote) {
+        tabAudioNote.hidden = isTabAudioSupported();
+      }
       microphoneSelectElement.innerHTML = '<option value="">Chargement des microphones...</option>';
       microphoneSelectElement.style.display = 'block';
       
@@ -183,7 +194,14 @@ document.addEventListener('DOMContentLoaded', () => {
           option.textContent = device.label || `Microphone ${index + 1}`;
           microphoneSelectElement.appendChild(option);
         });
-        
+
+        if (isTabAudioSupported()) {
+          const tabOption = document.createElement('option');
+          tabOption.value = TAB_AUDIO_VALUE;
+          tabOption.textContent = "🎧 Son de l'onglet (visio) + micro — Chrome/Edge uniquement";
+          microphoneSelectElement.appendChild(tabOption);
+        }
+
         microphoneSelectElement.style.display = 'block';
       } else {
         microphoneSelectElement.innerHTML = '<option value="">Aucun microphone détecté</option>';
@@ -203,6 +221,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentStream) {
       currentStream.getTracks().forEach(track => track.stop());
       currentStream = null;
+    }
+
+    if (tabStream) {
+      tabStream.getTracks().forEach(track => track.stop());
+      tabStream = null;
+    }
+    if (mixContext) {
+      mixContext.close().catch(() => {});
+      mixContext = null;
     }
     
     // Arrêter le MediaRecorder s'il est en cours
@@ -273,6 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Démarrer l'enregistrement
   startBtn.addEventListener('click', async () => {
+    let wantsTabAudio = false;
     try {
       // NETTOYER L'ENREGISTREMENT PRÉCÉDENT AVANT DE DÉMARRER
       clearPreviousRecording();
@@ -281,24 +309,67 @@ document.addEventListener('DOMContentLoaded', () => {
       recordingStatus.style.color = 'blue';
       
       let audioConstraints = true;
-      
-      if (microphoneSelectElement && microphoneSelectElement.value) {
+
+      wantsTabAudio = !!(microphoneSelectElement && microphoneSelectElement.value === TAB_AUDIO_VALUE);
+      if (microphoneSelectElement && microphoneSelectElement.value && !wantsTabAudio) {
         audioConstraints = {
           deviceId: { exact: microphoneSelectElement.value }
         };
       }
 
-      console.log('Contraintes audio:', audioConstraints);
-      
+      console.log('Contraintes audio:', audioConstraints, 'Mode onglet:', wantsTabAudio);
+
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: audioConstraints,
         video: false
       });
-      
+
+      let recordStream = stream;
       currentStream = stream;
+
+      if (wantsTabAudio) {
+        let displayStream;
+        try {
+          displayStream = await navigator.mediaDevices.getDisplayMedia({
+            video: { displaySurface: 'browser' },
+            audio: { echoCancellation: false, noiseSuppression: false }
+          });
+        } catch (err) {
+          if (err && (err.name === 'OverconstrainedError' || err.name === 'TypeError')) {
+            displayStream = await navigator.mediaDevices.getDisplayMedia({
+              video: true,
+              audio: { echoCancellation: false, noiseSuppression: false }
+            });
+          } else {
+            throw err;
+          }
+        }
+
+        displayStream.getVideoTracks().forEach(track => track.stop());
+        const tabAudioTracks = displayStream.getAudioTracks();
+        if (tabAudioTracks.length === 0) {
+          stream.getTracks().forEach(track => track.stop());
+          throw new Error("Aucun son d'onglet partagé. Cochez « Partager l'audio de l'onglet » dans la fenêtre de partage.");
+        }
+
+        tabStream = displayStream;
+        tabAudioTracks[0].addEventListener('ended', () => {
+          console.log("Partage de l'onglet arrêté par l'utilisateur");
+          recordingStatus.textContent = "🎧 Son de l'onglet arrêté, le micro continue d'enregistrer";
+          recordingStatus.style.color = '#F68807';
+        });
+
+        mixContext = new AudioContext();
+        const mixDest = mixContext.createMediaStreamDestination();
+        mixContext.createMediaStreamSource(stream).connect(mixDest);
+        mixContext.createMediaStreamSource(displayStream).connect(mixDest);
+        recordStream = mixDest.stream;
+        currentStream = new MediaStream([...stream.getTracks(), ...displayStream.getAudioTracks()]);
+      }
+
       console.log('Stream obtenu avec succès:', stream);
 
-      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder = new MediaRecorder(recordStream);
       audioChunks = [];
 
       mediaRecorder.ondataavailable = (e) => {
@@ -324,7 +395,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentStream) {
           currentStream.getTracks().forEach(track => track.stop());
         }
-        
+        if (mixContext) {
+          mixContext.close().catch(() => {});
+          mixContext = null;
+        }
+        tabStream = null;
+
         // Arrêter la visualisation audio
         stopAudioVisualization();
         waveformContainer.style.display = 'none';
@@ -356,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
       recordingWarning.style.display = 'block';
       
       // Initialiser la visualisation audio
-      initAudioVisualization(stream);
+      initAudioVisualization(recordStream);
       waveformContainer.style.display = 'block';
       
       mediaRecorder.start();
@@ -381,7 +457,9 @@ document.addEventListener('DOMContentLoaded', () => {
       
       let errorMessage = "⚠️ Erreur inconnue";
       if (error.name === 'NotAllowedError') {
-        errorMessage = "⚠️ Accès au micro refusé. Veuillez autoriser l'accès au microphone.";
+        errorMessage = wantsTabAudio
+          ? "⚠️ Partage d'onglet annulé. Choisissez un onglet et cochez « Partager l'audio de l'onglet »."
+          : "⚠️ Accès au micro refusé. Veuillez autoriser l'accès au microphone.";
       } else if (error.name === 'NotFoundError') {
         errorMessage = "⚠️ Aucun micro détecté. Vérifiez votre matériel.";
       } else if (error.name === 'NotReadableError') {

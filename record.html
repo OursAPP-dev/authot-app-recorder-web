@@ -246,6 +246,12 @@
       color: #484E52;
     }
 
+    .hint {
+      font-size: 13px;
+      color: #1DBAA5;
+      margin: 0;
+    }
+
     #waveform-container {
       display: none;
       width: 100%;
@@ -311,6 +317,7 @@
 
         <label for="microphone-select">Microphone :</label>
         <select id="microphone-select" style="display: none;"></select>
+        <p id="tab-audio-note" class="hint" hidden>🎧 L'enregistrement du son de l'onglet (visioconférence) est disponible uniquement sur Chrome ou Edge.</p>
 
         <label for="recording-name">Nom de votre enregistrement :</label>
         <input type="text" id="recording-name" placeholder="Enregistrement - AAAA-MM-JJ HHhMM" />
