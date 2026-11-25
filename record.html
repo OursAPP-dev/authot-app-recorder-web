@@ -22,7 +22,7 @@
     .container {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 20px;
     }
 
     h1, h2, h3 {
@@ -74,10 +74,14 @@
       border-left-color: #484E52;
     }
 
+    .block[hidden] {
+      display: none;
+    }
+
     .auth-section, .recorder-section {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 24px;
     }
 
     label {
@@ -323,8 +327,8 @@
         </div>
       </div>
 
-      <!-- Bloc 3 : écoute, téléchargement et envoi -->
-      <div class="block">
+      <!-- Bloc 3 : écoute, téléchargement et envoi (affiché uniquement quand un audio est disponible) -->
+      <div class="block" id="playback-block" hidden>
         <h2>🎧 Écoute, téléchargement et envoi</h2>
         <audio id="playback" controls style="display: none;"></audio>
         <a id="download-btn" class="btn" style="display: none;">⬇️ Télécharger l'audio</a>

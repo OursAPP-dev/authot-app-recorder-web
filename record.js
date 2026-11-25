@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const backBtnRecorder = document.getElementById('back-btn-recorder');
   const recordingNameInput = document.getElementById('recording-name');
   const downloadBtn = document.getElementById('download-btn');
+  const playbackBlock = document.getElementById('playback-block');
   let currentAudioUrl = null;
   let currentAudioBlob = null;
 
@@ -237,6 +238,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     currentAudioUrl = null;
     currentAudioBlob = null;
+    if (playbackBlock) {
+      playbackBlock.hidden = true;
+    }
     
     // Arrêter la visualisation audio
     stopAudioVisualization();
@@ -312,6 +316,9 @@ document.addEventListener('DOMContentLoaded', () => {
           currentAudioBlob = audioBlob;
           playback.src = audioUrl;
           playback.style.display = 'block';
+          if (playbackBlock) {
+            playbackBlock.hidden = false;
+          }
         }
         
         if (currentStream) {
@@ -516,17 +523,6 @@ document.addEventListener('DOMContentLoaded', () => {
       recordingStatus.style.color = 'green';
       uploadBtn.textContent = '📤 Envoyer vers Authôt APP';
       uploadBtn.disabled = false;
-      
-      setTimeout(() => {
-        audioChunks = [];
-        playback.style.display = 'none';
-        playback.src = '';
-        
-        // Supprimer le bouton Envoyer après succès
-        if (uploadBtn) {
-          uploadBtn.remove();
-        }
-      }, 2000);
 
     } catch (error) {
       console.error('Erreur lors de l\'envoi:', error);
