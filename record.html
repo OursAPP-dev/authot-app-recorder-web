@@ -315,9 +315,16 @@
           <option value="es">Espagnol</option>
         </select>
 
+        <label for="record-mode-select">Mode d'enregistrement :</label>
+        <select id="record-mode-select">
+          <option value="mic">🎤 Microphone uniquement</option>
+          <option value="tab" data-tab>🎧 Son de l'onglet uniquement (visio)</option>
+          <option value="tab_mic" data-tab>🎧🎤 Son de l'onglet + microphone (visio)</option>
+        </select>
+
         <label for="microphone-select">Microphone :</label>
         <select id="microphone-select" style="display: none;"></select>
-        <p id="tab-audio-note" class="hint" hidden>🎧 L'enregistrement du son de l'onglet (visioconférence) est disponible uniquement sur Chrome ou Edge.</p>
+        <p id="tab-audio-note" class="hint" hidden>🎧 Les modes « son de l'onglet » (visioconférence) sont disponibles uniquement sur Chrome ou Edge.</p>
 
         <label for="recording-name">Nom de votre enregistrement :</label>
         <input type="text" id="recording-name" placeholder="Enregistrement - AAAA-MM-JJ HHhMM" />
