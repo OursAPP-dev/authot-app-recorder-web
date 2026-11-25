@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     setTimeout(() => {
       authSection.style.display = 'none';
-      recorderSection.style.display = 'block';
+      recorderSection.style.display = 'flex';
       refreshRecordingName();
       authStatus.textContent = '';
     }, 1000);
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('accessToken');
     if (token) {
       authSection.style.display = 'none';
-      recorderSection.style.display = 'block';
+      recorderSection.style.display = 'flex';
       refreshRecordingName();
       loadMicrophones();
     }
@@ -639,7 +639,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const logoutBtn = document.getElementById('logout-btn');
   logoutBtn.addEventListener('click', () => {
     localStorage.removeItem('accessToken');
-    authSection.style.display = 'block';
+    authSection.style.display = 'flex';
     recorderSection.style.display = 'none';
     tokenInput.value = '';
     authStatus.textContent = 'Vous êtes déconnecté.';
