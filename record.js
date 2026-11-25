@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isTabAudioSupported()) {
           const tabOption = document.createElement('option');
           tabOption.value = TAB_AUDIO_VALUE;
-          tabOption.textContent = "🎧 Son de l'onglet (visio) + micro — Chrome/Edge uniquement";
+          tabOption.textContent = "🎧 Son de l'onglet uniquement (visio) — Chrome/Edge";
           microphoneSelectElement.appendChild(tabOption);
         }
 
@@ -305,29 +305,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // NETTOYER L'ENREGISTREMENT PRÉCÉDENT AVANT DE DÉMARRER
       clearPreviousRecording();
       
-      recordingStatus.textContent = "🎤 Demande d'accès au microphone...";
-      recordingStatus.style.color = 'blue';
-      
-      let audioConstraints = true;
-
       wantsTabAudio = !!(microphoneSelectElement && microphoneSelectElement.value === TAB_AUDIO_VALUE);
-      if (microphoneSelectElement && microphoneSelectElement.value && !wantsTabAudio) {
-        audioConstraints = {
-          deviceId: { exact: microphoneSelectElement.value }
-        };
-      }
 
-      console.log('Contraintes audio:', audioConstraints, 'Mode onglet:', wantsTabAudio);
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: audioConstraints,
-        video: false
-      });
-
-      let recordStream = stream;
-      currentStream = stream;
+      let recordStream = null;
 
       if (wantsTabAudio) {
+        recordingStatus.textContent = "🎧 Choisissez l'onglet à enregistrer et cochez « Partager l'audio de l'onglet »...";
+        recordingStatus.style.color = 'blue';
+
         let displayStream;
         try {
           displayStream = await navigator.mediaDevices.getDisplayMedia({
@@ -348,26 +333,42 @@ document.addEventListener('DOMContentLoaded', () => {
         displayStream.getVideoTracks().forEach(track => track.stop());
         const tabAudioTracks = displayStream.getAudioTracks();
         if (tabAudioTracks.length === 0) {
-          stream.getTracks().forEach(track => track.stop());
+          displayStream.getTracks().forEach(track => track.stop());
           throw new Error("Aucun son d'onglet partagé. Cochez « Partager l'audio de l'onglet » dans la fenêtre de partage.");
         }
 
         tabStream = displayStream;
+        currentStream = displayStream;
+        recordStream = new MediaStream(tabAudioTracks);
         tabAudioTracks[0].addEventListener('ended', () => {
           console.log("Partage de l'onglet arrêté par l'utilisateur");
-          recordingStatus.textContent = "🎧 Son de l'onglet arrêté, le micro continue d'enregistrer";
+          recordingStatus.textContent = "🎧 Partage de l'onglet arrêté";
           recordingStatus.style.color = '#F68807';
         });
 
-        mixContext = new AudioContext();
-        const mixDest = mixContext.createMediaStreamDestination();
-        mixContext.createMediaStreamSource(stream).connect(mixDest);
-        mixContext.createMediaStreamSource(displayStream).connect(mixDest);
-        recordStream = mixDest.stream;
-        currentStream = new MediaStream([...stream.getTracks(), ...displayStream.getAudioTracks()]);
-      }
+        console.log("Son de l'onglet obtenu avec succès:", displayStream);
+      } else {
+        recordingStatus.textContent = "🎤 Demande d'accès au microphone...";
+        recordingStatus.style.color = 'blue';
 
-      console.log('Stream obtenu avec succès:', stream);
+        let audioConstraints = true;
+        if (microphoneSelectElement && microphoneSelectElement.value) {
+          audioConstraints = {
+            deviceId: { exact: microphoneSelectElement.value }
+          };
+        }
+
+        console.log('Contraintes audio:', audioConstraints);
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: audioConstraints,
+          video: false
+        });
+
+        currentStream = stream;
+        recordStream = stream;
+        console.log('Stream obtenu avec succès:', stream);
+      }
 
       mediaRecorder = new MediaRecorder(recordStream);
       audioChunks = [];
