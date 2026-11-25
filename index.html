@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Authôt APP Recorder - Web</title>
   <style>
+    * {
+      font-family: "Droid Sans", sans-serif !important;
+    }
+
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f8f9fa;
+      background: linear-gradient(135deg, #fff4e8 0%, #e6f7f5 100%);
       margin: 0;
       padding: 0;
       display: flex;
@@ -16,32 +19,38 @@
       min-height: 100vh;
       color: #484E52;
     }
-    
+
     .container {
       background: white;
       border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 20px rgba(72, 78, 82, 0.15);
       padding: 40px;
       text-align: center;
-      max-width: 500px;
+      max-width: 560px;
       width: 90%;
     }
-    
+
+    .hero-logo {
+      width: 120px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
     h1 {
       color: #484E52;
       margin-bottom: 20px;
     }
-    
+
     p {
       color: #484E52;
       margin-bottom: 25px;
       line-height: 1.6;
     }
-    
+
     .btn {
       display: inline-block;
       padding: 15px 30px;
-      background: #F68807;
+      background: linear-gradient(135deg, #F68807 0%, #1DBAA5 100%);
       color: white;
       text-decoration: none;
       border-radius: 6px;
@@ -51,42 +60,46 @@
       cursor: pointer;
       font-size: 16px;
     }
-    
+
     .btn:hover {
-      background: #1DBAA5;
+      background: linear-gradient(135deg, #1DBAA5 0%, #F68807 100%);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+      box-shadow: 0 4px 12px rgba(246, 136, 7, 0.35);
     }
-    
+
     .btn:active {
       transform: translateY(0);
     }
-    
+
     .features {
       text-align: left;
       margin: 30px 0;
       padding: 20px;
-      background: #e7f3ff;
+      background: linear-gradient(135deg, #fff4e8 0%, #e6f7f5 100%);
       border-radius: 8px;
-      border-left: 4px solid #007bff;
+      border-left: 4px solid #F68807;
     }
-    
+
     .features h3 {
-      color: #004085;
+      color: #484E52;
       margin-top: 0;
       margin-bottom: 15px;
     }
-    
+
     .features ul {
       padding-left: 20px;
       margin: 0;
     }
-    
+
     .features li {
       margin-bottom: 8px;
       color: #484E52;
     }
-    
+
+    .features li::marker {
+      color: #1DBAA5;
+    }
+
     .icon {
       font-size: 24px;
       margin-right: 10px;
@@ -95,26 +108,29 @@
 </head>
 <body>
   <div class="container">
-    <h1>🎤 Authôt APP Recorder - Web</h1>
-    
+    <img src="assets/ibis.png" alt="Ibis Authôt APP" class="hero-logo"
+         onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='inline-block';">
+    <span id="logo-fallback" style="display: none; font-size: 64px;">🎤</span>
+    <h1>Authôt APP Recorder - Web</h1>
+
     <p>
-      Enregistrez et envoyez votre audio directement depuis votre navigateur vers Authôt APP.
+      Enregistrez localement et envoyez votre audio directement depuis votre navigateur vers votre compte Authôt APP.
     </p>
-    
+
     <div class="features">
       <h3><span class="icon">✨</span> Fonctionnalités</h3>
       <ul>
         <li>Authentification sécurisée avec votre token API Authôt APP</li>
         <li>Sélection de la langue (Français, Anglais, Espagnol)</li>
-        <li>Détection et sélection automatique des microphones disponibles</li>
-        <li>Enregistrement audio de haute qualité</li>
+        <li>Détection et sélection des microphones disponibles</li>
+        <li>Enregistrement audio de haute qualité en local dans le cache de votre navigateur</li>
         <li>Prévisualisation du fichier avant envoi</li>
         <li>Envoi automatique vers votre compte Authôt APP</li>
       </ul>
     </div>
-    
+
     <a href="record.html" class="btn">🎤 Ouvrir l'enregistreur</a>
-    
+
     <p style="margin-top: 30px; font-size: 14px; color: #999;">
       Développé avec 🐻 pour Authôt APP
     </p>

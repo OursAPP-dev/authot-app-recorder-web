@@ -1,18 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Authôt Recorder - Enregistrement</title>
   <style>
+    * {
+      font-family: "Droid Sans", sans-serif !important;
+    }
+
     body {
       width: 100%;
-      max-width: 500px;
+      max-width: 560px;
       min-height: 600px;
       padding: 20px;
       margin: 0 auto;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f8f9fa;
+      background: linear-gradient(135deg, #fff4e8 0%, #e6f7f5 100%);
       color: #484E52;
     }
 
@@ -24,15 +27,63 @@
 
     h1, h2, h3 {
       color: #484E52;
-      margin: 0 0 10px 0;
-      font-size: 20px;
-      text-align: center;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 22px;
+    }
+
+    h2 {
+      font-size: 17px;
+      margin-bottom: 5px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 2px 10px rgba(72, 78, 82, 0.1);
+    }
+
+    .logo-sm {
+      width: 32px;
+      height: auto;
+    }
+
+    .block {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(72, 78, 82, 0.1);
+      border-left: 4px solid #1DBAA5;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .block-accent-orange {
+      border-left-color: #F68807;
+    }
+
+    .block-accent-dark {
+      border-left-color: #484E52;
     }
 
     .auth-section, .recorder-section {
       display: flex;
       flex-direction: column;
       gap: 15px;
+    }
+
+    label {
+      font-weight: 500;
+      font-size: 14px;
+      color: #484E52;
     }
 
     input, select {
@@ -43,31 +94,37 @@
       box-sizing: border-box;
       font-size: 14px;
       background: white;
+      color: #484E52;
       transition: border-color 0.3s;
     }
 
     input:focus, select:focus {
       outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+      border-color: #1DBAA5;
+      box-shadow: 0 0 0 2px rgba(29, 186, 165, 0.25);
     }
 
-    button {
+    button, .btn {
       padding: 14px;
-      background: #1DBAA5;
+      background: linear-gradient(135deg, #F68807 0%, #1DBAA5 100%);
       color: white;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       width: 100%;
+      box-sizing: border-box;
+      display: block;
       font-size: 15px;
       font-weight: 500;
-      transition: background-color 0.3s, transform 0.2s;
+      text-decoration: none;
+      text-align: center;
+      transition: filter 0.3s, transform 0.2s, box-shadow 0.3s, background 0.3s;
     }
 
-    button:hover:not(:disabled) {
-      background: #1DBAA5;
+    button:hover:not(:disabled), .btn:hover {
+      filter: brightness(1.08);
       transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(246, 136, 7, 0.3);
     }
 
     button:active:not(:disabled) {
@@ -78,12 +135,73 @@
       background: #cccccc;
       cursor: not-allowed;
       transform: none;
+      box-shadow: none;
+    }
+
+    #start-btn, #save-token-btn {
+      background: linear-gradient(135deg, #F68807 0%, #1DBAA5 100%);
+    }
+
+    #start-btn:hover:not(:disabled), #save-token-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, #1DBAA5 0%, #F68807 100%);
+    }
+
+    #pause-btn {
+      background: #1DBAA5;
+    }
+
+    #pause-btn:hover:not(:disabled) {
+      background: #17a094;
+    }
+
+    #stop-btn {
+      background: #F68807;
+    }
+
+    #stop-btn:hover:not(:disabled) {
+      background: #e07a00;
+    }
+
+    #upload-btn {
+      background: linear-gradient(135deg, #1DBAA5 0%, #F68807 100%);
+    }
+
+    #upload-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, #F68807 0%, #1DBAA5 100%);
+    }
+
+    #download-btn {
+      background: #484E52;
+    }
+
+    #download-btn:hover {
+      background: #5a6268;
+    }
+
+    #logout-btn {
+      background: #484E52;
+    }
+
+    #logout-btn:hover:not(:disabled) {
+      background: #5a6268;
+    }
+
+    .back-btn {
+      background: transparent;
+      color: #484E52;
+      border: 2px solid #484E52;
+    }
+
+    .back-btn:hover:not(:disabled) {
+      background: #484E52;
+      color: white;
+      box-shadow: none;
     }
 
     .status {
       color: #484E52;
       font-size: 15px;
-      margin: 8px 0;
+      margin: 0;
       text-align: center;
       min-height: 20px;
       font-weight: 500;
@@ -91,35 +209,16 @@
 
     #playback {
       width: 100%;
-      margin-top: 10px;
       border-radius: 6px;
     }
 
-    #logout-btn {
-      background: #dc3545;
-    }
-
-    #logout-btn:hover:not(:disabled) {
-      background: #c82333;
-    }
-
-    #upload-btn {
-      background: #F68807;
-    }
-
-    #upload-btn:hover:not(:disabled) {
-      background: #F68807;
-    }
-
-    /* Avertissement d'enregistrement */
     .recording-warning {
-      background: #ffc107;
-      color: #856404;
+      background: linear-gradient(135deg, #F68807 0%, #e07a00 100%);
+      color: white;
       padding: 15px;
       border-radius: 6px;
       text-align: center;
       font-weight: bold;
-      margin-bottom: 15px;
       display: none;
       animation: pulse 1.5s infinite;
       font-size: 16px;
@@ -130,164 +229,117 @@
       50% { opacity: 0.7; }
     }
 
-    /* Style pour la section d'auth */
     .auth-info {
-      background: #e7f3ff;
+      background: #e6f7f5;
       padding: 15px;
       border-radius: 6px;
-      margin-bottom: 15px;
-      border-left: 4px solid #007bff;
+      border-left: 4px solid #1DBAA5;
     }
 
     .auth-info p {
       margin: 5px 0;
-      color: #004085;
+      color: #484E52;
     }
 
-    /* Bouton de retour */
-    .back-btn {
-      background: #484E52;
-      margin-bottom: 15px;
-    }
-
-    .back-btn:hover:not(:disabled) {
-      background: #5a6268;
-    }
-
-    /* Header */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .header h1 {
-      margin: 0;
-      flex: 1;
-    }
-
-    /* Bouton Pause */
-    #pause-btn {
-      background: #ffc107;
-    }
-
-    #pause-btn:hover:not(:disabled) {
-      background: #e0a800;
-    }
-
-    /* Conteneur waveform */
     #waveform-container {
-      background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+      display: none;
+      width: 100%;
+      height: 100px;
+      background: linear-gradient(135deg, #fff4e8 0%, #e6f7f5 100%);
       border: 2px solid #1DBAA5;
+      border-radius: 6px;
+      overflow: hidden;
     }
 
     #waveform-canvas {
+      width: 100%;
+      height: 100%;
       background: transparent;
-    }
-
-    /* Lecteur audio personnalisé */
-    #audio-player-container {
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 8px;
-      background: white;
-    }
-
-    #play-pause-btn {
-      transition: all 0.2s;
-    }
-
-    #play-pause-btn:hover {
-      background: #0056b3;
-      transform: scale(1.05);
-    }
-
-    #time-display {
-      font-family: monospace;
-    }
-
-    /* Animation pour l'onde sonore */
-    @keyframes wavePulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
-    }
-
-    .wave-bar {
-      background: #1DBAA5;
-      border-radius: 2px;
-      animation: wavePulse 0.5s ease-in-out infinite;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>🎤 Authôt Recorder</h1>
+      <img src="assets/ibis.png" alt="Ibis Authôt APP" class="logo-sm" onerror="this.style.display='none'">
+      <h1>Authôt Recorder</h1>
     </div>
-    
-    <!-- Section d'authentification -->
+
+    <!-- Bloc authentification -->
     <div id="auth-section" class="auth-section">
-      <div class="auth-info">
-        <h3>Authôt APP</h3>
-        <p>Veuillez saisir votre token API pour vous connecter.</p>
-        <p style="font-size: 13px; color: #666;">
-          Vous pouvez obtenir votre token dans votre compte Authôt APP, rubrique Mon Compte.
-        </p>
+      <div class="block block-accent-orange">
+        <h2>🔐 Authôt APP</h2>
+        <div class="auth-info">
+          <p>Veuillez saisir votre token API pour vous connecter.</p>
+          <p style="font-size: 13px;">
+            Vous pouvez obtenir votre token dans votre compte Authôt APP, rubrique Mon Compte.
+          </p>
+        </div>
+        <input type="text" id="token-input" placeholder="Token d'accès" />
+        <button id="save-token-btn">🔑 Enregistrer le token</button>
+        <p id="auth-status" class="status"></p>
       </div>
-      
-      <input type="text" id="token-input" placeholder="Token d'accès" />
-      <button id="save-token-btn">🔑 Enregistrer le token</button>
-      <p id="auth-status" class="status"></p>
-      
       <button id="back-btn" class="back-btn">← Retour à l'accueil</button>
     </div>
 
-    <!-- Section d'enregistrement -->
+    <!-- Section enregistreur -->
     <div id="recorder-section" style="display: none;">
       <div id="recording-warning" class="recording-warning">
         ⚠️ ENREGISTREMENT EN COURS - Ne fermez pas cet onglet !
       </div>
-      
-      <div class="auth-info">
-        <p>✅ Connecté avec succès</p>
-        <p style="font-size: 13px; color: #484E52;">
-          Votre token est sauvegardé.
-        </p>
-        <p style="font-size: 13px; color: #484E52;">
-          Vous pouvez commencer votre enregistrement sécurisé.
-        </p>
+
+      <!-- Bloc 1 : paramétrage de l'enregistrement -->
+      <div class="block block-accent-orange">
+        <h2>⚙️ Paramètres de l'enregistrement</h2>
+        <div class="auth-info">
+          <p>✅ Connecté avec succès</p>
+          <p style="font-size: 13px;">Votre token est sauvegardé.</p>
+          <p style="font-size: 13px;">Vous pouvez commencer votre enregistrement sécurisé.</p>
+        </div>
+
+        <label for="language-select">Langue source de votre enregistrement :</label>
+        <select id="language-select">
+          <option value="fr">Français</option>
+          <option value="en">Anglais</option>
+          <option value="es">Espagnol</option>
+        </select>
+
+        <label for="microphone-select">Microphone :</label>
+        <select id="microphone-select" style="display: none;"></select>
+
+        <label for="recording-name">Nom de votre enregistrement :</label>
+        <input type="text" id="recording-name" placeholder="Enregistrement - AAAA-MM-JJ HHhMM" />
       </div>
-      
-      <h3>Enregistrement Audio</h3>
-      
-      <label for="language-select">Langue :</label>
-      <select id="language-select">
-        <option value="fr">Français</option>
-        <option value="en">Anglais</option>
-        <option value="es">Espagnol</option>
-      </select>
-      
-      <label for="microphone-select" style="margin-top: 10px; display: block;">Microphone :</label>
-      <select id="microphone-select" style="display: none;"></select>
-      
-      <label for="recording-name" style="margin-top: 10px; display: block;">Nom de votre enregistrement :</label>
-      <input type="text" id="recording-name" value="Enregistrement" style="margin-bottom: 10px;" />
-      
-      <button id="start-btn">🎤 Démarrer l'enregistrement</button>
-      <button id="stop-btn" disabled>⏹ Arrêter</button>
-      <button id="pause-btn" disabled>⏸ Mettre en pause</button>
-      <p id="recording-status" class="status">Prêt à enregistrer</p>
-      <div id="waveform-container" style="display: none; width: 100%; height: 100px; margin: 10px 0; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
-        <canvas id="waveform-canvas" style="width: 100%; height: 100%;"></canvas>
+
+      <!-- Bloc 2 : contrôles d'enregistrement -->
+      <div class="block">
+        <h2>🎛️ Contrôles de l'enregistrement</h2>
+        <button id="start-btn">🎤 Démarrer l'enregistrement</button>
+        <button id="pause-btn" disabled>⏸ Mettre en pause</button>
+        <button id="stop-btn" disabled>⏹ Arrêter</button>
+        <p id="recording-status" class="status">Prêt à enregistrer</p>
+        <div id="waveform-container">
+          <canvas id="waveform-canvas"></canvas>
+        </div>
       </div>
-      <audio id="playback" controls style="display: none; width: 100%; margin-top: 20px;"></audio>
-      
-      <button id="logout-btn" style="margin-top: 50px;">🔴 Déconnexion</button>
-      <button id="back-btn-recorder" class="back-btn" style="margin-top: 10px;">← Retour à l'accueil</button>
+
+      <!-- Bloc 3 : écoute, téléchargement et envoi -->
+      <div class="block">
+        <h2>🎧 Écoute, téléchargement et envoi</h2>
+        <audio id="playback" controls style="display: none;"></audio>
+        <a id="download-btn" class="btn" style="display: none;">⬇️ Télécharger l'audio</a>
+        <!-- Le bouton "Envoyer vers Authôt APP" est inséré ici après l'arrêt de l'enregistrement -->
+      </div>
+
+      <!-- Bloc 4 : déconnexion et retour à l'accueil -->
+      <div class="block block-accent-dark">
+        <h2>👤 Compte</h2>
+        <button id="logout-btn">🔒 Déconnexion</button>
+        <button id="back-btn-recorder" class="back-btn">← Retour à l'accueil</button>
+      </div>
     </div>
   </div>
-  
+
   <script src="record.js"></script>
 </body>
 </html>

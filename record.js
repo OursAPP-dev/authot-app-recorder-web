@@ -28,7 +28,34 @@ document.addEventListener('DOMContentLoaded', () => {
   const recordingWarning = document.getElementById('recording-warning');
   const backBtn = document.getElementById('back-btn');
   const backBtnRecorder = document.getElementById('back-btn-recorder');
-  
+  const recordingNameInput = document.getElementById('recording-name');
+  const downloadBtn = document.getElementById('download-btn');
+  let currentAudioUrl = null;
+  let currentAudioBlob = null;
+
+  function defaultRecordingName() {
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    return `Enregistrement - ${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}h${pad(now.getMinutes())}`;
+  }
+
+  function refreshRecordingName() {
+    if (recordingNameInput) {
+      recordingNameInput.value = defaultRecordingName();
+    }
+  }
+
+  function getFileExtension(mimeType) {
+    if (!mimeType) return 'webm';
+    if (mimeType.includes('wav')) return 'wav';
+    if (mimeType.includes('webm')) return 'webm';
+    if (mimeType.includes('ogg')) return 'ogg';
+    return 'audio';
+  }
+
+  refreshRecordingName();
+
+
   // Éléments pour la visualisation audio
   waveformCanvas = document.getElementById('waveform-canvas');
   waveformCtx = waveformCanvas.getContext('2d');
@@ -59,6 +86,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Bouton de téléchargement de l'audio enregistré
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', (e) => {
+      if (!currentAudioUrl) return;
+      e.preventDefault();
+      const name = (recordingNameInput && recordingNameInput.value.trim()) || 'Enregistrement';
+      const a = document.createElement('a');
+      a.href = currentAudioUrl;
+      a.download = `${name}.${getFileExtension(currentAudioBlob ? currentAudioBlob.type : '')}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    });
+  }
+
   // Vérifier si un token est déjà sauvegardé
   checkToken();
 
@@ -71,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Reprendre l'enregistrement
       mediaRecorder.resume();
       pauseBtn.textContent = '⏸ Mettre en pause';
-      pauseBtn.style.background = '#ffc107';
+      pauseBtn.style.background = '#1DBAA5';
       recordingStatus.textContent = "🎙 Enregistrement en cours...";
       isPaused = false;
       resumeAudioVisualization();
@@ -79,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Mettre en pause l'enregistrement
       mediaRecorder.pause();
       pauseBtn.textContent = '▶ Reprendre';
-      pauseBtn.style.background = '#28a745';
+      pauseBtn.style.background = '#F68807';
       recordingStatus.textContent = "⏸ Enregistrement en pause";
       isPaused = true;
       pauseAudioVisualization();
@@ -103,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       authSection.style.display = 'none';
       recorderSection.style.display = 'block';
+      refreshRecordingName();
       authStatus.textContent = '';
     }, 1000);
   });
@@ -112,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (token) {
       authSection.style.display = 'none';
       recorderSection.style.display = 'block';
+      refreshRecordingName();
       loadMicrophones();
     }
   }
@@ -184,6 +228,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (uploadBtn) {
       uploadBtn.remove();
     }
+
+    // Masquer le bouton de téléchargement et réinitialiser l'audio courant
+    const downloadBtnElement = document.getElementById('download-btn');
+    if (downloadBtnElement) {
+      downloadBtnElement.style.display = 'none';
+      downloadBtnElement.removeAttribute('href');
+    }
+    currentAudioUrl = null;
+    currentAudioBlob = null;
     
     // Arrêter la visualisation audio
     stopAudioVisualization();
@@ -203,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
     stopBtn.disabled = true;
     pauseBtn.disabled = true;
     pauseBtn.textContent = '⏸ Mettre en pause';
-    pauseBtn.style.background = '#ffc107';
+    pauseBtn.style.background = '#1DBAA5';
     
     // Réinitialiser le statut
     recordingStatus.textContent = "Prêt à enregistrer";
@@ -255,6 +308,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const mimeType = audioChunks[0].type || 'audio/webm';
           const audioBlob = new Blob(audioChunks, { type: mimeType });
           const audioUrl = URL.createObjectURL(audioBlob);
+          currentAudioUrl = audioUrl;
+          currentAudioBlob = audioBlob;
           playback.src = audioUrl;
           playback.style.display = 'block';
         }
@@ -271,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isPaused = false;
         pauseBtn.disabled = true;
         pauseBtn.textContent = '⏸ Mettre en pause';
-        pauseBtn.style.background = '#ffc107';
+        pauseBtn.style.background = '#1DBAA5';
         allowPopupClose();
         recordingWarning.style.display = 'none';
       };
@@ -344,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
       stopBtn.disabled = true;
       pauseBtn.disabled = true;
       pauseBtn.textContent = '⏸ Mettre en pause';
-      pauseBtn.style.background = '#ffc107';
+      pauseBtn.style.background = '#1DBAA5';
       recordingStatus.textContent = "✅ Enregistrement terminé. Prêt à envoyer.";
       recordingStatus.style.color = 'green';
       
@@ -376,17 +431,22 @@ document.addEventListener('DOMContentLoaded', () => {
       uploadToAuthot(audioBlob);
     });
 
-    // Insérer le bouton sous le lecteur audio
-    const playbackElement = document.getElementById('playback');
-    if (playbackElement && playbackElement.parentNode) {
-      playbackElement.parentNode.insertBefore(uploadBtn, playbackElement.nextSibling);
+    // Insérer le bouton après le bouton de téléchargement (ou sous le lecteur audio)
+    const anchor = document.getElementById('download-btn') || document.getElementById('playback');
+    if (anchor && anchor.parentNode) {
+      anchor.parentNode.insertBefore(uploadBtn, anchor.nextSibling);
+    }
+
+    // Activer le bouton de téléchargement
+    if (downloadBtn && currentAudioUrl) {
+      downloadBtn.href = currentAudioUrl;
+      downloadBtn.style.display = 'block';
     }
   }
 
   async function uploadToAuthot(audioBlob) {
     const uploadBtn = document.getElementById('upload-btn');
     const selectedLanguage = languageSelect.value;
-    const recordingNameInput = document.getElementById('recording-name');
     const recordingName = recordingNameInput ? recordingNameInput.value.trim() : 'Enregistrement';
     
     uploadBtn.disabled = true;
@@ -412,9 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const formData = new FormData();
       const audioType = audioBlob.type || 'audio/webm';
-      const fileExtension = audioType.includes('wav') ? 'wav' : 
-                          audioType.includes('webm') ? 'webm' : 
-                          audioType.includes('ogg') ? 'ogg' : 'audio';
+      const fileExtension = getFileExtension(audioType);
       formData.append('data', audioBlob, `${recordingName}.${fileExtension}`);
       formData.append('lang', apiLang);
       
@@ -454,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const responseData = await response.json();
       
-      recordingStatus.innerHTML = "✅ Fichier envoyé avec succès, retrouvez la transcription sur votre compte dans la rubrique <a href='https://authot.app/sounds' target='_blank' style='color: #007bff; text-decoration: underline;'>Mes projets</a> !";
+      recordingStatus.innerHTML = "✅ Fichier envoyé avec succès, retrouvez la transcription sur votre compte dans la rubrique <a href='https://authot.app/sounds' target='_blank' style='color: #1DBAA5; text-decoration: underline;'>Mes projets</a> !";
       recordingStatus.style.color = 'green';
       uploadBtn.textContent = '📤 Envoyer vers Authôt APP';
       uploadBtn.disabled = false;
@@ -527,9 +585,9 @@ document.addEventListener('DOMContentLoaded', () => {
       for (let i = 0; i < bufferLength; i++) {
         const barHeight = (dataArray[i] / 255) * waveformCanvas.height;
         
-        // Couleur basée sur l'intensité
-        const hue = 200 + (barHeight / waveformCanvas.height) * 60;
-        waveformCtx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+        // Couleurs de marque selon l'intensité
+        const ratio = barHeight / waveformCanvas.height;
+        waveformCtx.fillStyle = ratio > 0.5 ? '#F68807' : '#1DBAA5';
         
         // Dessiner la barre
         waveformCtx.fillRect(x, waveformCanvas.height - barHeight, barWidth, barHeight);
@@ -601,7 +659,7 @@ document.addEventListener('DOMContentLoaded', () => {
     stopBtn.disabled = true;
     pauseBtn.disabled = true;
     pauseBtn.textContent = '⏸ Mettre en pause';
-    pauseBtn.style.background = '#ffc107';
+    pauseBtn.style.background = '#1DBAA5';
     recordingStatus.textContent = 'Prêt à enregistrer';
     recordingStatus.style.color = '#666';
     recordingWarning.style.display = 'none';
